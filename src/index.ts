@@ -6,6 +6,8 @@ import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import { CONST } from "./constants/constant"
 
+import SongRoutes from "./routes/SongRoutes"
+
 
 
 class App {
@@ -16,7 +18,6 @@ class App {
         this.app = express();
         this.setMiddlewares();
         this.setRoutes();
-        this.initDB();
     }
 
     private setMiddlewares() {
@@ -29,11 +30,9 @@ class App {
 
     private setRoutes() {
         // this.app.use("/api", new Routes(this.app).routes);
+        this.app.use("/api/v1/transfer", SongRoutes);
     }
 
-    private initDB() {
-        // DB.init();
-    }
 
 }
 

@@ -9,3 +9,27 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  user_id  Int     @id @default(autoincrement())
+  email    String  @unique @db.VarChar(256)
+  password String  @db.VarChar(256)
+  username String  @unique @db.VarChar(256)
+  name     String  @db.VarChar(256)
+  isAdmin  Boolean
+  songs    Song[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Song {
+  song_id     Int    @id @default(autoincrement())
+  Judul       String @db.VarChar(256)
+  penyanyi_id Int
+  Audio_path  String @db.VarChar(256)
+  User        User   @relation(fields: [penyanyi_id], references: [user_id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
