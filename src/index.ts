@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser"
 import { CONST } from "./constants/constant"
 
 import SongRoutes from "./routes/SongRoutes"
+import SingerRoutes from "./routes/SingerRoutes"
 
 
 
@@ -30,6 +31,7 @@ class App {
 
     private setRoutes() {
         // this.app.use("/api", new Routes(this.app).routes);
+        this.app.use("/api/v1/singer", SingerRoutes);
         this.app.use("/api/v1/transfer", SongRoutes);
     }
 
