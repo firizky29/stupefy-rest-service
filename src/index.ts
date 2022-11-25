@@ -8,6 +8,7 @@ import { CONST } from "./constants/constant"
 
 import SongRoutes from "./routes/SongRoutes"
 import SingerRoutes from "./routes/SingerRoutes"
+import AuthRoutes from "./routes/AuthRoutes"
 
 
 
@@ -32,7 +33,8 @@ class App {
     private setRoutes() {
         // this.app.use("/api", new Routes(this.app).routes);
         this.app.use("/api/v1/singer", SingerRoutes);
-        this.app.use("/api/v1/transfer", SongRoutes);
+        this.app.use("/api/v1/song", SongRoutes);
+        this.app.use("/api/v1/auth", AuthRoutes);
     }
 
 
