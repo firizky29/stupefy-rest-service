@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import BaseController from "./BaseController";
+import * as fs from 'fs';
 import jwt from 'jsonwebtoken';
 import { CONST } from "../constants/constant";
 
@@ -28,6 +29,7 @@ class SongController extends BaseController {
                 },
                 skip: offset,
                 take: limit
+
             });
             res.status(200).json(songs);
         } catch (error) {
@@ -47,9 +49,9 @@ class SongController extends BaseController {
                     Audio_path: true
                 }
             });
-            console.log(song_path)
             if(song_path){
-                res.sendFile(song_path.Audio_path , { root: __dirname });
+                res.setHeader('Content-Type', 'audio/mpeg');
+                res.sendFile(song_path.Audio_path);
             } else{
                 res.status(404).send({message : "Song not found"});
             }
@@ -66,7 +68,6 @@ class SongController extends BaseController {
             const penyanyi_id = 1;
 
             if(req.file){
-                console.log(req.body);
                 console.log(req.file);
                 const song = await this.prisma.song.create({
                     data: {
@@ -87,29 +88,74 @@ class SongController extends BaseController {
 
     updateSong = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const song = await this.prisma.song.update({
+            const oldSong = await this.prisma.song.findUnique({
                 where: {
-                    song_id: parseInt(req.params.song_id)
+                    song_id: parseInt(req.params.id)
                 },
-                data: {
-                    ...req.body
+                select: {
+                    Audio_path: true
                 }
             });
-            res.status(200).json(song);
+
+            if(req.file){   
+                req.body = {...req.body, Audio_path: req.file.path};
+            }
+
+            if(oldSong){
+                const song = await this.prisma.song.update({
+                    where: {
+                        song_id: parseInt(req.params.id)
+                    },
+                    data: {
+                        ...req.body
+                    }
+                });
+                
+                if(req.file){
+                    if(fs.existsSync(oldSong.Audio_path)){
+                        fs.unlinkSync(oldSong.Audio_path);
+                    }
+                }
+                res.status(200).json(song);
+            } else{
+                res.status(404).send({message : "Song not found"});
+            }
         } catch (error) {
+            console.log(error);
             res.status(500).send({ message: "Internal Server Error" })
         }
     }
 
     deleteSong = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const song = await this.prisma.song.delete({
+            const oldSong = await this.prisma.song.findUnique({
                 where: {
-                    song_id: parseInt(req.params.song_id)
+                    song_id: parseInt(req.params.id)
+                },
+                select: {
+                    Audio_path: true
                 }
             });
-            res.status(200).json(song);
+
+            
+            if(oldSong){
+                const song = await this.prisma.song.delete({
+                    where: {
+                        song_id: parseInt(req.params.id)
+                    }
+                });
+
+                if(fs.existsSync(oldSong.Audio_path)){
+                    fs.unlinkSync(oldSong.Audio_path);
+                }
+
+                res.status(200).json(song);
+
+            } else{
+                res.status(404).send({message : "Song not found"});
+            }
         } catch (error) {
+            console.log(error);
             res.status(500).send({ message: "Internal Server Error" })
         }
     }

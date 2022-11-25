@@ -10,6 +10,7 @@ class SongRoutes extends BaseRoutes {
         this.routes.post("/", upload.single('file'), SongController.createSong);
         this.routes.put("/:id", upload.single('file'), SongController.updateSong);
         this.routes.delete("/:id", SongController.deleteSong);
+        
     }
 }
 
