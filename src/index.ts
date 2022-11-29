@@ -25,6 +25,7 @@ class App {
 
     private setMiddlewares() {
         this.app.use(bodyParser.json({limit: '50mb'}));
+        this.app.use(bodyParser.urlencoded({extended: true}));
         this.app.use(morgan("dev"));
         this.app.use(cors({origin: 'http://localhost:3000', credentials: true}));
         this.app.use(helmet());

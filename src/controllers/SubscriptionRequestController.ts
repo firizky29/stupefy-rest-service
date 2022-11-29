@@ -43,13 +43,13 @@ class SubscriptionRequestController extends BaseController {
         try {
             const url = 'http://192.168.127.83:3101/SubscriptionService?wsdl'; // kyknya harus pake local ip masing2 
             var client = await soap.createClientAsync(url);
+            console.log(req.body);
             let args = {
                 ...req.body
             }
-            console.log(req.body);
             var result = await client.respondRequestSubsAsync(args);
             console.log(result);
-            res.status(200).json(result);
+            res.status(200).json(result[0]);
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: "Internal Server Error" })
