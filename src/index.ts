@@ -9,6 +9,7 @@ import { CONST } from "./constants/constant"
 import SongRoutes from "./routes/SongRoutes"
 import SingerRoutes from "./routes/SingerRoutes"
 import AuthRoutes from "./routes/AuthRoutes"
+import SubscriptionRequestRoutes from "./routes/SubscriptionRequestRoutes"
 
 
 
@@ -35,6 +36,7 @@ class App {
         this.app.use("/api/v1/singer", SingerRoutes);
         this.app.use("/api/v1/song", SongRoutes);
         this.app.use("/api/v1/auth", AuthRoutes);
+        this.app.use("/api/v1/subscription-request", SubscriptionRequestRoutes);        
     }
 
 
