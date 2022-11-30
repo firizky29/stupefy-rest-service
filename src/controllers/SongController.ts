@@ -3,6 +3,7 @@ import BaseController from "./BaseController";
 import * as fs from 'fs';
 import jwt from 'jsonwebtoken';
 import { CONST } from "../constants/constant";
+import path from "path";
 
 interface JWTPayload{
     penyanyi_id : number;
@@ -19,6 +20,14 @@ class SongController extends BaseController {
             const limit = parseInt(req.query.limit as string) || 10;
             const offset = (page - 1) * limit;
 
+            const total = await this.prisma.song.count(
+                {
+                    where: {
+                        penyanyi_id
+                    }
+                }
+            );
+
             const songs = await this.prisma.song.findMany({
                 where: {
                     penyanyi_id: penyanyi_id,
@@ -26,13 +35,18 @@ class SongController extends BaseController {
                 select: {
                     song_id: true,
                     Judul: true,
+                    createdAt: true,
                 },
                 skip: offset,
-                take: limit
-
+                take: limit,
+                orderBy: {
+                    createdAt: "desc"
+                }
             });
-            res.status(200).json(songs);
+            // console.log(songs)
+            res.status(200).json({data: songs, total_page: Math.ceil(total/limit), total_song: songs.length});
         } catch (error) {
+            console.log(error)
             res.status(500).send({ message: "Internal Server Error" })
         }
     }
@@ -50,8 +64,15 @@ class SongController extends BaseController {
                 }
             });
             if(song_path){
-                res.setHeader('Content-Type', 'audio/mpeg');
-                res.sendFile(song_path.Audio_path);
+                const stat = fs.statSync(song_path.Audio_path);
+                
+                res.writeHead(200, {
+                    'Content-Type': 'audio/mpeg',
+                    'Content-Length': stat.size
+                });
+            
+                const readStream = fs.createReadStream(song_path.Audio_path);
+                readStream.pipe(res);
             } else{
                 res.status(404).send({message : "Song not found"});
             }
@@ -66,7 +87,6 @@ class SongController extends BaseController {
             // const cookie = req.cookies['jwt'];
             // const { penyanyi_id } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
             const penyanyi_id = 1;
-
             if(req.file){
                 console.log(req.file);
                 const song = await this.prisma.song.create({
