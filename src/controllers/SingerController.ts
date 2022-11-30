@@ -8,22 +8,24 @@ class SingerController extends BaseController{
         try{
             let client = await getClient();
             let cache = await client.get("singer");
-
-            if(cache){
+            if(cache && cache.length > 2){
                 res.json(JSON.parse(cache));
+            }else{
+                console.log("gaada di cache");
+                const singer = await this.prisma.user.findMany({
+                    where: {
+                       isAdmin: false, 
+                    },
+                });
+                console.log("berhasil get singer");
+                client.set('singer', JSON.stringify(singer));
+                console.log("berhasil set ke cache");
+                res.status(200).json(JSON.stringify(singer));
+                console.log("berhasil kirim");
             }
 
-            const singer = await this.prisma.user.findMany({
-                where: {
-                   isAdmin: false, 
-                }
-            });
-
-            client.set('singer', JSON.stringify(singer));
-            res.status(200).json(singer);
-            res.status(200).send('masuk');
         }catch(error){
-            console.log('Internal Server Error');
+            console.log(error);
             res.status(500).send({message : "Internal Server Error 1" });
         }
     }
