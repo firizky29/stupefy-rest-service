@@ -4,7 +4,8 @@
   "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
   "main": "index.js",
   "prisma": {
-    "schema": "./src/prisma/schema.prisma"
+    "schema": "./src/prisma/schema.prisma",
+    "seed": "npx ts-node ./src/prisma/seeder/seeder.ts"
   },
   "scripts": {
     "start": "NODE_PATH=./build node build/index.js",
