@@ -15,7 +15,7 @@ class SingerController extends BaseController{
                 const singer = await this.prisma.user.findMany({
                     where: {
                        isAdmin: false, 
-                    },
+                    }
                 });
                 console.log("berhasil get singer");
                 client.set('singer', JSON.stringify(singer));
