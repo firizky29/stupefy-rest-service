@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
 import { CONST } from "../constants/constant";
+import { getClient } from "../lib/cache";
 
 interface JwtPayload {
     user_id: number;
@@ -14,6 +15,10 @@ interface JwtPayload {
 class AuthController extends BaseController {
     register = async (req: Request, res: Response, _next: NextFunction) => {
         try {
+            let client = await getClient();
+            let cache = await client.get("singer");
+
+
             let { name, username, email, password } = req.body;
             const countUserName = await this.prisma.user.count({
                 where: {
@@ -58,7 +63,7 @@ class AuthController extends BaseController {
 
             const token = jwt.sign(payload, CONST.JWT_SECRET_KEY || "secret");
 
-            console.log("Hi");
+            // console.log("Hi");
             res.cookie("stupefy_token", token, {
                 httpOnly: true,
                 sameSite: "none",
@@ -66,8 +71,11 @@ class AuthController extends BaseController {
                 maxAge: 1000 * 60 * 60 * 24 * 7
             });
 
-            console.log("hi 2");
-            
+            // console.log("hi 2");
+            if(cache){
+                client.del("singer");
+            }
+
             return res.status(200).json({
                 message: "Registration successful"
             });
