@@ -12,12 +12,12 @@ export const guest = async (req: Request, res: Response, next: NextFunction) => 
     try{
         const cookie = req.cookies['stupefy_token'];
 
-        console.log(cookie);
+        // console.log(cookie);
         
         const decoded = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JwtPayload;
 
         if(!decoded) {
-            console.log("guest");
+            // console.log("guest");
             return next()
         }   
 
@@ -26,7 +26,7 @@ export const guest = async (req: Request, res: Response, next: NextFunction) => 
         });
 
     } catch(err){
-        console.log("guest");
+        // console.log("guest");
         return next();
     }
 }

@@ -9,6 +9,7 @@ class SingerController extends BaseController{
             let client = await getClient();
             let cache = await client.get("singer");
             if(cache && cache.length > 2){
+                
                 res.json(JSON.parse(cache));
             }else{
                 console.log("gaada di cache");
@@ -31,7 +32,7 @@ class SingerController extends BaseController{
 
         }catch(error){
             console.log(error);
-            res.status(500).send({message : "Internal Server Error 1" });
+            res.status(500).send({message : "Internal Server Error" });
         }
     }
     
@@ -39,12 +40,12 @@ class SingerController extends BaseController{
         try {
             const song = await this.prisma.song.findMany({
                 where: {
-                    penyanyi_id: parseInt(req.params.penyanyi_id),
+                    penyanyi_id: parseInt(req.params.id),
                 }
             });
             res.status(200).json(song);
         }catch(error){
-            res.status(500).send({message : "Internal Server Error 2" });
+            res.status(500).send({message : "Internal Server Error" });
         }
     }
 }
