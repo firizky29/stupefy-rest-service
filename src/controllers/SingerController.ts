@@ -15,12 +15,17 @@ class SingerController extends BaseController{
                 const singer = await this.prisma.user.findMany({
                     where: {
                        isAdmin: false, 
-                    }
+                    },
+                    select: {
+                        user_id: true,
+                        name: true,
+                    },
                 });
                 console.log("berhasil get singer");
                 client.set('singer', JSON.stringify(singer));
                 console.log("berhasil set ke cache");
-                res.status(200).json(JSON.stringify(singer));
+                res.setHeader('Access-Control-Allow-Origin','*');
+                res.status(200).json(singer);
                 console.log("berhasil kirim");
             }
 
