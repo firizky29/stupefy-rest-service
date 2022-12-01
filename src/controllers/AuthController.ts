@@ -131,6 +131,7 @@ class AuthController extends BaseController {
 
             return res.status(200).json({
                 message: "Role fetched successfully",
+                name: display_name,
                 role: user.isAdmin ? "Admin" : "Singer"
             });
         } catch (error) {

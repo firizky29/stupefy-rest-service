@@ -6,14 +6,17 @@ import { CONST } from "../constants/constant";
 import path from "path";
 
 interface JWTPayload{
-    penyanyi_id : number;
+    user_id: number;
+    display_name: string;
+    username: string;
 }
+
 class SongController extends BaseController {
     getSongs = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // const cookie = req.cookies['jwt'];
-            // const { penyanyi_id } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
-            const penyanyi_id = 1;
+            const cookie = req.cookies.stupefy_token;
+            const { user_id, display_name, username } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
+            const penyanyi_id = user_id;
 
 
             const page = parseInt(req.query.page as string) || 1;
@@ -53,11 +56,16 @@ class SongController extends BaseController {
 
     getSongById = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            const cookie = req.cookies.stupefy_token;
+            const { user_id, display_name, username } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
+            const penyanyi_id = user_id;
+
             const song_id = parseInt(req.params.id);
 
-            const song_path = await this.prisma.song.findUnique({
+            const song_path = await this.prisma.song.findFirst({
                 where: {
-                    song_id: song_id
+                    song_id: song_id,
+                    penyanyi_id: penyanyi_id
                 },
                 select: {
                     Audio_path: true
@@ -84,9 +92,10 @@ class SongController extends BaseController {
 
     createSong = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // const cookie = req.cookies['jwt'];
-            // const { penyanyi_id } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
-            const penyanyi_id = 1;
+            const cookie = req.cookies.stupefy_token;
+            const { user_id, display_name, username } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
+            const penyanyi_id = user_id;
+
             if(req.file){
                 console.log(req.file);
                 const song = await this.prisma.song.create({
@@ -108,9 +117,14 @@ class SongController extends BaseController {
 
     updateSong = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const oldSong = await this.prisma.song.findUnique({
+            const cookie = req.cookies.stupefy_token;
+            const { user_id, display_name, username } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
+            const penyanyi_id = user_id;
+
+            const oldSong = await this.prisma.song.findFirst({
                 where: {
-                    song_id: parseInt(req.params.id)
+                    song_id: parseInt(req.params.id),
+                    penyanyi_id: penyanyi_id
                 },
                 select: {
                     Audio_path: true
@@ -122,9 +136,10 @@ class SongController extends BaseController {
             }
 
             if(oldSong){
-                const song = await this.prisma.song.update({
+                const song = await this.prisma.song.updateMany({
                     where: {
-                        song_id: parseInt(req.params.id)
+                        song_id: parseInt(req.params.id),
+                        penyanyi_id: penyanyi_id
                     },
                     data: {
                         ...req.body
@@ -148,9 +163,14 @@ class SongController extends BaseController {
 
     deleteSong = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const oldSong = await this.prisma.song.findUnique({
+            const cookie = req.cookies.stupefy_token;
+            const { user_id, display_name, username } = jwt.verify(cookie, CONST.JWT_SECRET_KEY || "secret") as JWTPayload;
+            const penyanyi_id = user_id;
+
+            const oldSong = await this.prisma.song.findFirst({
                 where: {
-                    song_id: parseInt(req.params.id)
+                    song_id: parseInt(req.params.id),
+                    penyanyi_id: penyanyi_id
                 },
                 select: {
                     Audio_path: true
@@ -159,9 +179,10 @@ class SongController extends BaseController {
 
             
             if(oldSong){
-                const song = await this.prisma.song.delete({
+                const song = await this.prisma.song.deleteMany({
                     where: {
-                        song_id: parseInt(req.params.id)
+                        song_id: parseInt(req.params.id),
+                        penyanyi_id: penyanyi_id
                     }
                 });
 
