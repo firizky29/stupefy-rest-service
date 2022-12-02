@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import BaseController from "./BaseController";
 import { getClient } from "../lib/cache";
-import * as redis from 'redis'
-
-const soap = require('soap');
+import * as fs from "fs";
 
 class SingerController extends BaseController{
     getAllSinger = async (req : Request, res : Response, next : NextFunction) => {
@@ -66,6 +64,37 @@ class SingerController extends BaseController{
             res.status(200).json(singer);
         } catch(error){
             res.status(500).send({message : "Internal Server Error" });
+        }
+    }
+
+    getSongById = async (req : Request, res : Response, next : NextFunction) => {
+        try{
+            const song_id = parseInt(req.params.id);
+
+            const song_path = await this.prisma.song.findFirst({
+                where: {
+                    song_id: song_id,
+                },
+                select: {
+                    Audio_path: true
+                }
+            });
+            if(song_path){
+                const stat = fs.statSync(song_path.Audio_path);
+                
+                res.writeHead(200, {
+                    'Content-Type': 'audio/mpeg',
+                    'Content-Length': stat.size
+                });
+            
+                const readStream = fs.createReadStream(song_path.Audio_path);
+                readStream.pipe(res);
+            } else{
+                res.status(404).send({message : "Song not found"});
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(500).send({ message: "Internal Server Error" })
         }
     }
 }
