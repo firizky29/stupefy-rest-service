@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import BaseController from "./BaseController";
+import { CONST } from "./../constants/constant";
 
 const soap = require('soap');
 
@@ -8,8 +9,10 @@ const soap = require('soap');
 class SubscriptionRequestController extends BaseController {
     getSubscriptionRequests = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const iplocal = "192.168.127.83"; //pake iplocal masing2 pake command ipconfig
-            const url = 'http://192.168.127.83:3101/SubscriptionService?wsdl';
+            const ip_soap = "stupefy-soap-service-server-1"; //pake iplocal masing2 pake command ipconfig
+            const iplocal = "192.168.0.189";
+            // const url = `http://${ip_soap}:3101/SubscriptionService?wsdl`;
+            const url = `http://192.168.0.189:3101/SubscriptionService?wsdl`;
             var client = await soap.createClientAsync(url);
             let limit : number;
             let offset : number;
@@ -28,7 +31,7 @@ class SubscriptionRequestController extends BaseController {
             let args = {
                 offset: offset,
                 limit: limit,
-                apiKey: "askdf",
+                apiKey: CONST.SOAP_API_KEY,
             }
             var result = await client.getRequestsAsync(args);
             console.log(result);
@@ -41,11 +44,14 @@ class SubscriptionRequestController extends BaseController {
 
     respondRequestSubs = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const url = 'http://192.168.127.83:3101/SubscriptionService?wsdl'; // kyknya harus pake local ip masing2 
+            const ip_soap = "stupefy-soap-service-server-1"; //pake iplocal masing2 pake command ipconfig
+            // const url = `http://${ip_soap}:3101/SubscriptionService?wsdl`; // kyknya harus pake local ip masing2 
+            const url = `http://192.168.0.189:3101/SubscriptionService?wsdl`; // kyknya harus pake local ip masing2 
             var client = await soap.createClientAsync(url);
             console.log(req.body);
             let args = {
-                ...req.body
+                ...req.body,
+                apiKey: CONST.SOAP_API_KEY,
             }
             var result = await client.respondRequestSubsAsync(args);
             console.log(result);

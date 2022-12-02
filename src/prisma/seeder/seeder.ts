@@ -16,14 +16,17 @@ import bcrypt from "bcrypt";
             isAdmin: true
         }
     });
-    const user2 = await prisma.user.create({
-        data: {
-            name: "biduan",
-            username: "biduan",
-            email: "biduan@gmail.com",
-            password: hashedPassword2,
-            isAdmin: false
-        }
-    });
+
+    for(let i =1;i <=30;i++) {
+        await prisma.user.create({
+            data: {
+                name: `name${i}`,
+                username: `user${i}`,
+                email: `test${i}@gmail.com`,
+                password: await bcrypt.hash("User.123", 10),
+                isAdmin: false
+            }
+        });
+    }
 })();
 
