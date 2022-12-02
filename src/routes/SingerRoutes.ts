@@ -9,7 +9,6 @@ class SingerRoutes extends BaseRoutes {
         this.routes.get("/:id/song/", SingerController.getAllSongsOfSinger);
         this.routes.get("/:id", SingerController.getSingerById);
         this.routes.get("/song/:id", SingerController.getSongById);
-        this.routes.get("/song/:id/detail", SingerController.getSongDetailById);
     }
 
 }
