@@ -21,8 +21,16 @@ class SubscriptionRequestController extends BaseController {
             // } else {
             //     limit = 10;
             // }
+            const totalData = await client.getRequestsAsync({
+                offset:0,
+                limit:999999999,
+                apiKey: CONST.SOAP_API_KEY,
+            })
+            const total = totalData[0].length;
+
             limit = parseInt(req.query.limit as string) || 10;
-            offset = parseInt(req.query.offset as string) || 0;
+            page = parseInt(req.query.page as string) || 0;
+            offset = limit*(page-1);
             // if(req.query.offset && typeof req.query.offset === 'string'){
             //     offset = parseInt(req.query.offset,10);
             // } else {
@@ -35,7 +43,7 @@ class SubscriptionRequestController extends BaseController {
             }
             var result = await client.getRequestsAsync(args);
             console.log(result);
-            res.status(200).json(result[0]);
+            res.status(200).json(data: result[0], total_page: Math.ceil(total/limit), total_subscriptions: result[0].length);
         } catch (error) { 
             console.log(error);
             res.status(500).send({ message: "Internal Server Error" })
