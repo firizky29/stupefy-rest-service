@@ -3,6 +3,8 @@ import BaseController from "./BaseController";
 import { getClient } from "../lib/cache";
 import * as redis from 'redis'
 
+const soap = require('soap');
+
 class SingerController extends BaseController{
     getAllSinger = async (req : Request, res : Response, next : NextFunction) => {
         try{
