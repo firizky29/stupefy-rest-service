@@ -15,5 +15,17 @@ import bcrypt from "bcrypt";
             isAdmin: true
         }
     });
+
+    for(let i =1;i <=30;i++) {
+        await prisma.user.create({
+            data: {
+                name: `name${i}`,
+                username: `user${i}`,
+                email: `test${i}@gmail.com`,
+                password: await bcrypt.hash("User.123", 10),
+                isAdmin: false
+            }
+        });
+    }
 })();
 
