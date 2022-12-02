@@ -6,7 +6,7 @@ import { admin } from "../middlewares/admin";
 
 class SubscriptionRequestRoutes extends BaseRoutes {
     public setRoutes(): void {
-        this.routes.get("/", [verifyToken, admin], SubscriptionRequestController.getSubscriptionRequests);
+        this.routes.get("/", SubscriptionRequestController.getSubscriptionRequests);
         this.routes.post("/respond", [verifyToken, admin], SubscriptionRequestController.respondRequestSubs);
     }
 }
